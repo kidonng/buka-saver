@@ -6,6 +6,8 @@ import { chapterInfo, mangaInfo, Chapter } from '.'
 const mkdir = (path: string) => {
   if (!fs.existsSync(path)) fs.mkdirSync(path)
 }
+const safePath = (...paths: string[]) =>
+  path.join(...paths.map(path => path.replace(/\//g, ' ')))
 
 const downChapter = async (
   mid: string,
@@ -16,13 +18,11 @@ const downChapter = async (
   const { images, paid } = await chapterInfo(mid, cid)
   if (paid) return console.info('Paid chapter, skipping')
 
-  mkdir(
-    path.join('down', mangaTitle.replace(/\//g, ' '), title.replace(/\//g, ' '))
-  )
+  mkdir(safePath('down', mangaTitle, title))
 
   images.forEach(async (image, index) => {
     console.info(`Downloading ${title} part ${index + 1}/${images.length}`)
-    const file = path.join('down', mangaTitle, title, path.parse(image).base)
+    const file = safePath('down', mangaTitle, title, path.parse(image).base)
     if (fs.existsSync(file)) console.info('File exist, skipping')
     else {
       const buffer = await got(image).buffer()
@@ -34,7 +34,7 @@ const downChapter = async (
 export const down = async (mid: string, cid?: string) => {
   const { title, chapters } = await mangaInfo(mid)
   mkdir('down')
-  mkdir(path.join('down', title.replace(/\//g, ' ')))
+  mkdir(safePath('down', title))
 
   const todo = cid ? [chapters.find(chapter => chapter.cid === cid)!] : chapters
   todo.forEach((chapter, index) => {
