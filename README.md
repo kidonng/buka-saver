@@ -1,14 +1,14 @@
 # Buka Saver
 
-Buka Manga is disappointing. We need a saver!
+**Buka Manga is disappointing. We need a saver!**
 
-Buka Saver can fetch manga/chapter info and download them.
+Buka Saver can fetch manga/chapter info and download them from Buka Manga.
 
 **Disclaimer:** This project is for learning purposes only. We do not provide direct access to any copyright content.
 
-## Usage example
+## Usage Example
 
-We don't provide prebuilt version for the moment. You need to run `yarn build` before using.
+You need to run `yarn build` first.
 
 ```
 # View manga info
@@ -25,6 +25,6 @@ yarn cli http://www.buka.cn/view/221735/65537.html -d
 
 ## Notes
 
-- We don't always verify inputs. If you are seeing errors, please retry with the right inputs.
-- In case you missed it, files will be downloaded to `down`.
+- Incorrect inputs and downloads are not completely handled. If you are seeing errors, please try again.
+- Files will be downloaded into `down` directory.
 - See Supported URL patterns [here](src/index.ts#L6-L11).
