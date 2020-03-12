@@ -1,34 +1,53 @@
 import arg from 'arg'
-import { parseID, chapterInfo, mangaInfo } from '.'
-import { down } from './down'
+import cliProgress from 'cli-progress'
+import { red, blue } from 'colorette'
+import chapterInfo from './chapter'
+import { download } from './download'
+import mangaInfo from './manga'
+import { parse } from './util'
 
-const args = arg({
-  '--down': Boolean,
-  '--mid': String,
-  '--cid': String,
-  '-d': '--down',
-  '-m': '--mid',
-  '-c': '--cid'
-})
+const downloader = async (mid: string, cid?: string) => {
+  const { name: mangaName, chapters } = await mangaInfo(mid)
+  console.info(blue(`Downloading ${mangaName}`))
+  const cids = cid ? [cid] : chapters.map(chapter => chapter.cid)
 
-let mid
-let cid
+  const multibar = new cliProgress.MultiBar({
+    format: '{name} {bar} {percentage}% | ETA: {eta}s | {value}/{total}'
+  })
 
-try {
-  const [url] = args._
-  new URL(url)
-  ;({ mid, cid } = parseID(url))
-} catch {
-  mid = args['--mid']
-  cid = args['--cid']
+  for (const cid of cids) {
+    const { name, images, paid } = await chapterInfo(mid, cid)
+    if (paid) return console.error(red(`Skipping paid chapter ${name}`))
+
+    const bar = multibar.create(images.length, 0, { name })
+
+    for (const image of images) {
+      await download(image, { dest: ['down', mangaName, name] })
+      bar.increment()
+    }
+  }
+  multibar.stop()
+  console.info(blue(`Download ${mangaName} complete`))
 }
 
-if (!mid) console.error('Please at least provide mid')
-else if (args['--down']) {
-  if (cid) down(mid, cid)
-  else down(mid)
-} else
-  (async () => {
-    if (cid) console.log(await chapterInfo(mid, cid))
-    else console.log(await mangaInfo(mid))
-  })()
+const args = arg({
+  '--mid': String,
+  '--cid': String,
+  '--url': String,
+  '--download': Boolean,
+  '-m': '--mid',
+  '-c': '--cid',
+  '-u': '--url',
+  '-d': '--download'
+})
+;(async () => {
+  const { mid, cid } = args['--url']
+    ? parse(args['--url'])
+    : { mid: args['--mid'], cid: args['--cid'] }
+
+  if (!mid) return console.error(red('`mid` not found!'))
+
+  if (args['--download']) return cid ? downloader(mid, cid) : downloader(mid)
+
+  console.log(await (cid ? chapterInfo(mid, cid) : mangaInfo(mid)))
+})()

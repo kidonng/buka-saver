@@ -1,30 +1,27 @@
 # Buka Saver
 
-**Buka Manga is disappointing. We need a saver!**
+**Disclaimer: This project is for learning purposes only. We do not provide access to any copyright content.**
+
+Buka Manga is doomed. We need a **saver**!
 
 Buka Saver can fetch manga/chapter info and download them from Buka Manga.
 
-**Disclaimer:** This project is for learning purposes only. We do not provide direct access to any copyright content.
+## Usage
 
-## Usage Example
+Make sure you have installed dependencies (via `yarn`) and built the program (via `yarn build`) first.
 
-You need to run `yarn build` first.
+- `--mid`, `-m`: specify `mid`
+- `--cid`, `-c`: specify `cid`
+- `--url`, `-u`: parse `mid` and/or `cid` from URL
+- `--download`, `-d`: download manga/chapter into `./down`
 
-```
+```sh
 # View manga info
-yarn cli --mid 221735
-# View Chapter info
-yarn cli --mid 221735 --cid 65537
+node dist/cli.js --mid 221735
+# View chapter info
+node dist/cli.js -m 221735 -c 65537
 # Download manga
-yarn cli --mid 221735 --down
-# Download manga chapter
-yarn cli -m 221735 -c 65537 -d
-# Works with URL too
-yarn cli http://www.buka.cn/view/221735/65537.html -d
+node dist/cli.js -m 221735 -d
+# Using URL
+node dist/cli.js -u http://www.buka.cn/view/221735/65537.html -d
 ```
-
-## Notes
-
-- Incorrect inputs and downloads are not completely handled. If you are seeing errors, please try again.
-- Files will be downloaded into `down` directory.
-- See Supported URL patterns [here](src/index.ts#L6-L11).
