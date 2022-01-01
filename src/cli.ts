@@ -1,6 +1,7 @@
 import arg from 'arg'
 import cliProgress from 'cli-progress'
 import { red, blue } from 'colorette'
+import sanitize from 'sanitize-filename'
 import chapterInfo from './chapter'
 import { download } from './download'
 import mangaInfo from './manga'
@@ -8,6 +9,8 @@ import { parse } from './util'
 
 const downloader = async (mid: string, cid?: string) => {
   const { name: mangaName, chapters } = await mangaInfo(mid)
+  if (!chapters) return console.error(red(`Skipping unavailable manga ${mangaName}`))
+
   console.info(blue(`Downloading ${mangaName}`))
   const cids = cid ? [cid] : chapters.map(chapter => chapter.cid)
 
@@ -17,12 +20,13 @@ const downloader = async (mid: string, cid?: string) => {
 
   for (const cid of cids) {
     const { name, images, paid } = await chapterInfo(mid, cid)
+    if (!name || !images) return console.error(red(`Skipping unavailable chapter ${cid}`))
     if (paid) return console.error(red(`Skipping paid chapter ${name}`))
 
     const bar = multibar.create(images.length, 0, { name })
 
     for (const image of images) {
-      await download(image, { dest: ['down', mangaName, name] })
+      await download(image, { dest: `down/${sanitize(mangaName)}/${sanitize(name)}` })
       bar.increment()
     }
   }

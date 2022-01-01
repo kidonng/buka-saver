@@ -17,11 +17,6 @@ const render = {
       ? `http://m.buka.cn/read/${options.mid}/${options.cid}`
       : `http://m.buka.cn/m/${options.mid}`
   },
-  wx(options: RenderOptions) {
-    return options.cid
-      ? `http://wx.sosohaha.com/chapter?mid=${options.mid}&cid=${options.cid}`
-      : `http://wx.sosohaha.com/manga/${options.mid}`
-  }
 }
 
 export const parse = (url: string) => {

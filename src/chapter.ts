@@ -1,4 +1,4 @@
-import { crawl, parse } from './util'
+import { crawl } from './util'
 
 const getImages = ($: CheerioStatic, selector: string) => {
   const images: string[] = $(selector)
@@ -8,11 +8,6 @@ const getImages = ($: CheerioStatic, selector: string) => {
 
   return { images, paid }
 }
-
-const getIDByElement = (element: Cheerio) =>
-  element.is('.disabled')
-    ? null
-    : parse(`http://wx.sosohaha.com${element.attr('href')}`)
 
 export default async (mid: string, cid: string) => {
   const $ = await crawl('mobile', { mid, cid })
@@ -41,20 +36,8 @@ export default async (mid: string, cid: string) => {
   }
 
   // Chapter is not publicly available
-  const $$ = await crawl('wx', { mid, cid })
-
-  const name = $$('.bar-top-cindex').text()
-  const { images, paid } = getImages($$, '.img-wrapper img')
-  const prev = getIDByElement($$('.chapter-ctrl-btn:first-of-type'))
-  const next = getIDByElement($$('.chapter-ctrl-btn:last-of-type'))
-
   return {
     mid,
     cid,
-    name,
-    paid,
-    images,
-    prev,
-    next
   }
 }
