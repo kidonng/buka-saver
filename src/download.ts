@@ -1,24 +1,21 @@
-import fs from 'fs'
-import got from 'got'
-import path from 'path'
-import stream from 'stream'
-import util from 'util'
-
-const pipeline = util.promisify(stream.pipeline)
+import * as fs from 'std/fs/mod.ts'
+import * as path from 'std/path/mod.ts'
 
 interface DownloadOptions {
-  dest?: string
-  overwrite?: boolean
+    dest?: string
+    overwrite?: boolean
 }
 
 export const download = async (url: string, options?: DownloadOptions) => {
-  let { base } = path.parse(url)
-  if (options?.dest) {
-    base = `${options.dest}/${base}`
-    fs.mkdirSync(options.dest, { recursive: true })
-  }
+    let { base } = path.parse(url)
+    if (options?.dest) {
+        base = `${options.dest}/${base}`
+        fs.ensureDirSync(options.dest)
+    }
 
-  if (fs.existsSync(base) && !options?.overwrite) return
+    if (fs.existsSync(base) && !options?.overwrite) return
 
-  return pipeline(got.stream(url), fs.createWriteStream(base))
+    const res = await fetch(url)
+    const file = await Deno.create(base)
+    return res.body!.pipeTo(file.writable)
 }
