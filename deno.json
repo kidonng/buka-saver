@@ -1,5 +1,6 @@
 {
     "tasks": {
-        "cli": "deno run --import-map import_map.json -A src/cli.ts"
-    }
+        "cli": "deno run -A src/cli.ts"
+    },
+    "importMap": "import_map.json"
 }
