@@ -1,9 +1,0 @@
-{
-    "imports": {
-        "arg": "https://esm.sh/arg@5.0.2",
-        "cheerio": "https://esm.sh/cheerio@1.0.0-rc.11",
-        "progress": "https://deno.land/x/progress@v1.2.7/mod.ts",
-        "sanitize-filename": "https://esm.sh/sanitize-filename@1.6.3",
-        "std/": "https://deno.land/std@0.140.0/"
-    }
-}
